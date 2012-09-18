@@ -8,7 +8,8 @@ class Reservation < ActiveRecord::Base
     validate :start_time_in_future, :unless => Proc.new { |r| r.start_time.blank? }
     validate :num_guests_less_than_4
     
-    before_create :reserve_table
+    # before_create :reserve_table
+    after_validation :reserve_table
     
     NUM_GUESTS_UPPER_LIMIT = 4
     START_TIME_LOW_LIMIT = 17      # 5 PM
@@ -68,23 +69,25 @@ class Reservation < ActiveRecord::Base
     end
     
     def reserve_table
-        avail_tables = available_tables
-        case avail_tables.length.to_i
-        when 0
-            throw_table_unavailable_error
-        when 1
-            if table_capacity(avail_tables[0].to_i) >= self.num_guests.to_i
-                self.table_reserved = avail_tables[0].to_i
-            else
+        if(errors.nil? or errors.empty?)
+            avail_tables = available_tables
+            case avail_tables.length.to_i
+            when 0
                 throw_table_unavailable_error
-            end
-        when 2
-            if table_capacity(avail_tables[0].to_i) >= self.num_guests.to_i
-                self.table_reserved = avail_tables[0]
-            elsif table_capacity(avail_tables[1].to_i) >= self.num_guests.to_i
-                self.table_reserved = avail_tables[1]
-            else
-                throw_table_unavailable_error
+            when 1
+                if table_capacity(avail_tables[0].to_i) >= self.num_guests.to_i
+                    self.table_reserved = avail_tables[0].to_i
+                else
+                    throw_table_unavailable_error
+                end
+            when 2
+                if table_capacity(avail_tables[0].to_i) >= self.num_guests.to_i
+                    self.table_reserved = avail_tables[0]
+                elsif table_capacity(avail_tables[1].to_i) >= self.num_guests.to_i
+                    self.table_reserved = avail_tables[1]
+                else
+                    throw_table_unavailable_error
+                end
             end
         end
     end
