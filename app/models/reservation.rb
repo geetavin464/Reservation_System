@@ -5,6 +5,7 @@ class Reservation < ActiveRecord::Base
     validates :start_time, :presence => true, :allow_blank => false
     validates :table_reserved, :uniqueness => {:scope => :start_time, :message => "Reservation is not available at the requested time"}
     validate :start_time_in_restaurant_hours, :unless => Proc.new { |r| r.start_time.blank? }
+    validate :start_time_in_future, :unless => Proc.new { |r| r.start_time.blank? }
     validate :num_guests_less_than_4
     
     before_create :reserve_table
@@ -30,6 +31,13 @@ class Reservation < ActiveRecord::Base
        if (!(START_TIME_LOW_LIMIT..START_TIME_UPPER_LIMIT).include?(start_time.hour) or !(START_WDAY_LOW_LIMIT..START_WDAY_UPPER_LIMIT).include?(start_time.wday))
          errors[:base] << "Please select a time between 5PM & 8PM - Monday to Friday"
          errors.add( :start_time, "The restaurant does not operate at the selected time")
+       end
+    end
+    
+    def start_time_in_future
+       if (start_time < Time.now)
+         errors[:base] << "Please select a valid day/time"
+         errors.add( :start_time, "The requested day/time is not valid")
        end
     end
     
