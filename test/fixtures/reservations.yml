@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: 
+  num_guests: 
+  start_time: 2012-08-31 18:40:20
+
+two:
+  name: 
+  num_guests: 
+  start_time: 2012-08-31 18:40:20
