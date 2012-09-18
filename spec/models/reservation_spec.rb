@@ -27,6 +27,11 @@ describe Reservation do
         reservation.should_not be_valid
     end
     
+    it "should require a future start_time" do
+        reservation = Reservation.create(@attr.merge(:start_time => "Fri, 15 Sep 2012 18:00:00 UTC +00:00"))
+        reservation.should_not be_valid
+    end
+    
     it "should reject num_guests out of the range 1..4" do
        reservation = Reservation.create(@attr.merge(:num_guests => 5))
        reservation.should_not be_valid 
