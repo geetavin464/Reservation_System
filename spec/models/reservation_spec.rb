@@ -47,6 +47,22 @@ describe Reservation do
        reservation.table_reserved.should_not be_nil
     end
     
+    it "should reserve table 1(when both available) for 1..2 guests " do
+       reservation = Reservation.create(@attr) 
+       reservation.table_reserved.should equal 1
+    end
+    
+    it "should reserve table 2(when both available) for 3..4 guests " do
+       reservation = Reservation.create(@attr.merge(:num_guests => 3)) 
+       reservation.table_reserved.should equal 2
+    end
+    
+    it "should reserve table 2(only available) for 1..2 guests " do
+       reservation1 = Reservation.create(@attr)   
+       reservation2 = Reservation.create(@attr) 
+       reservation2.table_reserved.should equal 2
+    end
+    
     it "should reject an invalid start_time" do
        reservation = Reservation.create(@attr.merge(:start_time => "Fri, 21 Sep 2012 15:00:00 UTC +00:00")) 
        reservation.should have(1).error_on(:start_time)
